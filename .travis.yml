@@ -36,11 +36,11 @@ before_script:
   - sudo service apache2 start
   - php -i > build/logs/php.log
   # MySQL database configuration
-  - mysql -e 'CREATE DATABASE database;'
+  - mysql -e 'CREATE DATABASE travis;'
   - mysql -e "SET PASSWORD FOR 'travis'@'localhost' = PASSWORD('travis')";
   # Ant build tool configuration
   - cp build.properties.dist build.properties
-  - sed -i -e "s,username:password@host/db,travis@127.0.0.1/database,g" build.properties
+  - sed -i -e "s,username:password@host/db,travis@127.0.0.1/travis,g" build.properties
   - sed -i -e "s,#drupal.args,drupal.args,g" build.properties
   - sed -i -e "s,#apache.user,apache.user,g" build.properties
   - sed -i -e "s,#site.domain,site.domain,g" build.properties
