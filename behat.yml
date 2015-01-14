@@ -1,0 +1,16 @@
+default:
+  paths:
+    features: test/features
+  extensions:
+    Behat\MinkExtension\Extension:
+      goutte: ~
+      selenium2: ~
+      default_session: goutte
+      javascript_session: selenium2
+      files_path: "%behat.paths.features%/files/"
+      show_cmd: "open %s"
+    Drupal\DrupalExtension\Extension:
+      blackbox: ~
+      api_driver: drupal
+      drupal:
+        drupal_root: ./build/docroot

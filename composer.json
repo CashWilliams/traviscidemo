@@ -1,0 +1,7 @@
+{
+    "require": {
+      "symfony/browser-kit": "v2.5.5",
+      "drush/drush": "~6.0",
+      "drupal/drupal-extension": "1.0.x-dev#bb437f148df226807f494d212551b39ae45c6cc2"
+    }
+}

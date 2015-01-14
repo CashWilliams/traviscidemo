@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Travis CI Demo" default="composer">
+
+  <property name="drupal.profile" value="standard"/>
+
+  <property name="builddir" value="${basedir}/build"/>
+  <property name="selenium" value="${builddir}/selenium-server-standalone.jar"/>
+
+  <property file="build.properties"/>
+
+  <property name="account.mail"     value="test@example.com"/>
+  <property name="account.name"     value="admin"/>
+  <property name="account.pass"     value="admin"/>
+  <property name="base.url"         value="http://localhost"/>
+  <property name="behat.extra"      value="--tags ''"/>
+  <property name="behat.params"     value="extensions[Behat\MinkExtension\Extension][base_url]=${base.url}"/>
+  <property name="composer"         value="${basedir}/vendor/composer.phar"/>
+  <property name="composer.bin"     value="${basedir}/vendor/bin"/>
+  <property name="db.url"           value="mysql://username:password@host/db"/>
+  <property name="docroot"          value="${builddir}/docroot"/>
+  <property name="drush.makefile"   value="build-${drupal.makefile}.make"/>
+  <property name="drush.args"       value=""/>
+  <property name="php"              value="php"/>
+  <property name="rsync"            value="rsync"/>
+  <property name="selenium.version" value="2.40"/>
+  <property name="selenium.port"    value="4444"/>
+  <property name="site.mail"        value="test@example.com"/>
+  <property name="site.name"        value="Travis CI Demo"/>
+  <property name="site.domain"      value="localhost"/>
+  <property name="sites.subdir"     value="default"/>
+  <property name="strict"           value="true"/>
+  <condition property="apache.user.set">
+    <isset property="apache.user"/>
+  </condition>
+
+  <target name="run-tests" depends="drush-make,rsync,install,behat" description="Run behavior tests"/>
+
+  <target name="clean" depends="builddir.check" if="builddir.exists" description="Clean build artifacts">
+    <chmod dir="${docroot}/sites/${sites.subdir}" perm="a+rwx" includes="**" type="both"/>
+    <delete includeEmptyDirs="true" removeNotFollowedSymlinks="true">
+      <fileset dir="${builddir}" followsymlinks="false" defaultexcludes="no"/>
+    </delete>
+  </target>
+
+  <target name="builddir.check">
+    <condition property="builddir.exists">
+      <available file="${builddir}" type="dir"/>
+    </condition>
+  </target>
+
+  <target name="prepare">
+    <mkdir dir="${builddir}" />
+    <mkdir dir="${builddir}/logs" />
+    <mkdir dir="${basedir}/vendor" />
+  </target>
+
+  <target name="composer-check">
+    <available file="${composer}" property="composer.present"/>
+  </target>
+
+  <target name="composer-download" depends="prepare,composer-check" unless="composer.present">
+    <property name="composer.noselfupdate" value="true"/>
+    <get src="https://getcomposer.org/composer.phar" dest="${composer}"/>
+  </target>
+
+  <target name="composer-selfupdate" depends="composer-download" unless="composer.noselfupdate">
+    <exec executable="${php}" taskname="composer">
+      <arg value="${composer}"/>
+      <arg value="self-update"/>
+      <arg value="--quiet"/>
+    </exec>
+  </target>
+
+  <target name="composer" depends="composer-selfupdate" unless="composer.noupdate" description="Run composer update">
+    <exec executable="${php}" taskname="composer">
+      <arg value="${composer}"/>
+      <arg value="install"/>
+    </exec>
+  </target>
+
+  <target name="drush-check">
+    <condition property="drush.present">
+      <or>
+        <available file="${basedir}/vendor/bin/drush"/>
+        <isset property="${drush}"/>
+      </or>
+    </condition>
+    <condition property="drush" value="${basedir}/vendor/bin/drush">
+      <not>
+        <isset property="${drush}"/>
+      </not>
+    </condition>
+  </target>
+
+  <target name="drush-download" depends="prepare,composer-selfupdate,drush-check" unless="drush.present">
+    <exec executable="${php}" taskname="composer">
+      <arg value="${composer}"/>
+      <arg value="require"/>
+      <arg value="drush/drush:~6.0"/>
+    </exec>
+  </target>
+
+  <target name="drush-make" depends="clean,drush-download" unless="drush.nomake" description="Run drush make">
+    <delete dir="${docroot}"/>
+    <!-- Run drush make into ./build/docroot -->
+    <exec executable="${drush}" taskname="drush">
+      <env key="DRUSH_PHP" value="${php}"/>
+      <arg value="make"/>
+      <arg value="--nocolor"/>
+      <arg value="--no-patch-txt"/>
+      <arg value="--concurrency=6"/>
+      <arg value="${basedir}/${drush.makefile}"/>
+      <arg value="${docroot}"/>
+    </exec>
+  </target>
+
+  <target name="rsync" description="Rsync into build/docroot">
+    <!-- Rsync Sites -->
+    <exec executable="${rsync}" taskname="rsync">
+      <arg value="-aqc"/>
+      <arg value="${basedir}/sites/"/>
+      <arg value="${docroot}/sites/"/>
+    </exec>
+    <!-- Rsync acquia cloud hooks -->
+    <exec executable="${rsync}" taskname="rsync">
+      <arg value="-aqc"/>
+      <arg value="${basedir}/hooks/"/>
+      <arg value="${builddir}/hooks/"/>
+    </exec>
+  </target>
+
+  <target name="link" description="Link all required base files">
+    <!-- Delete the empty sites/default directory core ships with -->
+    <delete includeEmptyDirs="true" removeNotFollowedSymlinks="true">
+      <fileset dir="${docroot}/sites/default" followsymlinks="false" defaultexcludes="no"/>
+    </delete>
+    <!-- Link the default directory -->
+    <symlink link="${docroot}/sites/default" resource="${basedir}/sites/default"/>
+    <!-- Link any other needed folders/files here -->
+  </target>
+
+  <target name="install" depends="composer" unless="drush.noinstall" description="Run drush site-install">
+    <exec executable="${composer.bin}/drush" dir="${docroot}" taskname="drush">
+      <env key="DRUSH_PHP" value="${php}"/>
+      <arg value="site-install"/>
+      <arg value="-y"/>
+      <arg value="-v"/>
+      <arg value="--nocolor"/>
+      <arg value="--db-url=${db.url}"/>
+      <arg value="--site-name=${site.name}"/>
+      <arg value="--site-mail=${site.mail}"/>
+      <arg value="--account-name=${account.name}"/>
+      <arg value="--account-pass=${account.pass}"/>
+      <arg value="--account-mail=${account.mail}"/>
+      <arg value="--sites-subdir=${sites.subdir}"/>
+      <arg value="${drupal.profile}"/>
+    </exec>
+    <antcall target="change-perms"/>
+  </target>
+
+  <target name="change-perms" if="apache.user.set">
+    <chown owner="${apache.user}" type="both" verbose="false">
+      <fileset dir="${docroot}/sites/${sites.subdir}/files" includes="**"/>
+    </chown>
+
+    <chmod dir="${docroot}/sites/${sites.subdir}/files" perm="a+rwx" includes="**" type="both"/>
+    <chmod dir="${docroot}/sites/${sites.subdir}" perm="g+s" includes="files" type="dir"/>
+  </target>
+
+  <target name="uninstall" depends="composer" description="Run drush sql-drop">
+    <exec executable="${composer.bin}/drush" dir="${docroot}" taskname="drush">
+      <env key="DRUSH_PHP" value="${php}"/>
+      <arg value="sql-drop"/>
+      <arg value="-y"/>
+      <arg value="--nocolor"/>
+      <arg value="--db-url=${db.url}"/>
+    </exec>
+  </target>
+
+  <target name="behat" depends="composer">
+    <antcall target="selenium-start" />
+    <exec executable="${composer.bin}/behat" taskname="behat" failonerror="${strict}">
+      <env key="BEHAT_PARAMS" value="${behat.params}"/>
+      <arg value="--ansi" />
+      <arg value="-v" />
+      <arg line="${behat.extra}" />
+    </exec>
+    <antcall target="selenium-stop" />
+  </target>
+
+  <target name="selenium-check" depends="prepare">
+    <available file="${selenium}" property="selenium.present"/>
+  </target>
+
+  <target name="selenium-download" depends="selenium-check" unless="selenium.present">
+    <get src="http://selenium-release.storage.googleapis.com/${selenium.version}/selenium-server-standalone-${selenium.version}.0.jar" dest="${selenium}"/>
+  </target>
+
+  <target name="selenium-start" depends="selenium-download">
+    <echo taskname="selenium" message="Starting: Selenium server" />
+    <java jar="${selenium}" fork="true" spawn="true">
+      <arg line="-port ${selenium.port}"/>
+      <arg line="-log ${builddir}/logs/selenium.log"/>
+    </java>
+    <waitfor maxwait="30" maxwaitunit="second">
+      <and>
+        <socket server="localhost" port="${selenium.port}"/>
+        <http url="http://localhost:${selenium.port}/wd/hub/status" errorsBeginAt="404"/>
+      </and>
+    </waitfor>
+  </target>
+
+  <target name="selenium-stop">
+    <get taskname="selenium"
+         src="http://localhost:${selenium.port}/selenium-server/driver/?cmd=shutDownSeleniumServer"
+         dest="${builddir}/logs/shutdown.log"
+         ignoreerrors="true"
+         />
+  </target>
+</project>

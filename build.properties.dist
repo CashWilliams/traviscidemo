@@ -1,0 +1,11 @@
+base.url=http://localhost
+db.url=mysql://username:password@host/db
+drupal.makefile=traviscidemo
+
+#behat.extra=""
+#sites.subdir=default
+#site.mail=test@example.com
+#site.domain=localhost
+#account.name=admin
+#account.pass=admin
+#account.mail=test@example.com
