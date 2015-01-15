@@ -15,6 +15,9 @@ if $TRAVIS_PULL_REQUEST; then
   exit 0
 fi
 
+# Start ssh-agent http://stackoverflow.com/questions/17846529/could-not-open-a-connection-to-your-authentication-agent
+eval `ssh-agent -s`
+
 # add acquia host to known ssh hosts
 ACQUIA_HOST=$(echo $ACQUIA_REPO | awk '{split($0, arr, "[@:]"); print arr[2]}')
 ssh-keyscan $ACQUIA_HOST >> ~/.ssh/known_hosts
