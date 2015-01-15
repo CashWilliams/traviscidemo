@@ -32,11 +32,14 @@ ssh-add -l
 
 # clone acquia repo as /build_deploy
 git clone -vb $TRAVIS_BRANCH $ACQUIA_REPO build_deploy
+# TODO: This needs use variables
 git config --global user.email "CashWilliams@gmail.com"
 git config --global user.name "Travis CI"
 
 # rsync build into cloned repo
-rsync -a --delete build build_deploy
+# TODO: This needs to be more generic
+rsync -a --delete build/docroot build_deploy
+rsync -a --delete build/hooks build_deploy
 
 cd build_deploy
 # git add -A should remove no longer used files
