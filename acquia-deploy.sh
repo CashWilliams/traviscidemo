@@ -18,6 +18,10 @@ fi
 # Start ssh-agent http://stackoverflow.com/questions/17846529/could-not-open-a-connection-to-your-authentication-agent
 eval `ssh-agent -s`
 
+# Add key that is decrypted in .travis.yml
+chmod 600 travis_rsa
+ssh-add travis_rsa
+
 # add acquia host to known ssh hosts
 ACQUIA_HOST=$(echo $ACQUIA_REPO | awk '{split($0, arr, "[@:]"); print arr[2]}')
 ssh-keyscan $ACQUIA_HOST >> ~/.ssh/known_hosts
