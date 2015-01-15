@@ -32,8 +32,8 @@ ssh-add -l
 
 # clone acquia repo as /build_deploy
 git clone -vb $TRAVIS_BRANCH $ACQUIA_REPO build_deploy
-git config user.email "CashWilliams@gmail.com"
-git config user.name "Travis CI"
+git config --global user.email "CashWilliams@gmail.com"
+git config --global user.name "Travis CI"
 
 # rsync build into cloned repo
 rsync -a --delete build build_deploy
