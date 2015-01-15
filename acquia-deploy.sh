@@ -17,7 +17,7 @@ ACQUIA_HOST=$(echo $ACQUIA_REPO | awk '{split($0, arr, "[@:]"); print arr[2]}')
 ssh-keyscan $ACQUIA_HOST >> ~/.ssh/known_hosts
 
 # clone acquia repo as /build_deploy
-git clone -b $TRAVIS_BRANCH $ACQUIA_REPO build_deploy
+git clone -vb $TRAVIS_BRANCH $ACQUIA_REPO build_deploy
 git config user.email "CashWilliams@gmail.com"
 git config user.name "Travis CI"
 
