@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# trace execution
+set -x
+
 echo "- Acquia Deploy Starting -"
 
 if ${ACQUIA_DISABLE_DEPLOY:-false}; then
