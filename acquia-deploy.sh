@@ -28,6 +28,6 @@ cd build_deploy
 # git add -A should remove no longer used files
 git add -A .
 git commit -m "Travis CI build" 
-git push acquia $TRAVIS_BRANCH 
+git push origin $TRAVIS_BRANCH 
 
 echo "- Acquia Deploy Complete -"
