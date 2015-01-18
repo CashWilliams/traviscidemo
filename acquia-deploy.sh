@@ -38,13 +38,14 @@ git config --global user.name "Travis CI"
 
 # rsync build into cloned repo
 # TODO: This needs to be more generic
-rsync -a --delete build/docroot build_deploy
-rsync -a --delete build/hooks build_deploy
+rsync -avh --delete build/docroot build_deploy
+rsync -avh --delete build/hooks build_deploy
 
 cd build_deploy
 # git add -A should remove no longer used files
 git add -A .
-git commit -m "Travis CI build" 
+NOW=$(date +"%Y-%m-%d %H:%M:%S")
+git commit -m "Travis CI build $NOW" 
 git push origin $TRAVIS_BRANCH 
 
 echo "- Acquia Deploy Complete -"
