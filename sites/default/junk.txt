@@ -1,1 +1,0 @@
-This is a junk text file to test adding and removing a file.
