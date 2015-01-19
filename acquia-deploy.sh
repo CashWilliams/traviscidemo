@@ -10,7 +10,7 @@ if ${ACQUIA_DISABLE_DEPLOY:-false}; then
   exit 0
 fi
 
-if $TRAVIS_PULL_REQUEST; then
+if ${TRAVIS_PULL_REQUEST:-false}; then
   echo "Pull requests do not get deployed"
   exit 0
 fi
@@ -45,7 +45,7 @@ cd build_deploy
 # git add -A should remove no longer used files
 git add -A .
 NOW=$(date +"%Y-%m-%d %H:%M:%S")
-git commit -m "Travis CI build $NOW" 
+git commit -m "$TRAVIS_BRANCH build at $NOW" 
 git push origin $TRAVIS_BRANCH 
 
 echo "- Acquia Deploy Complete -"
