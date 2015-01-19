@@ -6,3 +6,7 @@ projects[drupal][version] = "7.34"
 ; Modules
 projects[acquia_connector][subdir] = "contrib"
 projects[acquia_connector][version] = "2.15"
+
+; Views
+projects[views][subdir] = "contrib"
+projects[views][version] = "3.8"
