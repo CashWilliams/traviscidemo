@@ -46,7 +46,7 @@ cd build_deploy
 git add -A .
 for DIR in docroot/sites/*; do
   if [ -d "${DIR}" ]; then
-    if [ "$DIR" -ne "docroot/sites/all" ]; then
+    if [ "$DIR" != "docroot/sites/all" ]; then
       git add -f docroot/sites/$DIR/settings.php
     fi
   fi
