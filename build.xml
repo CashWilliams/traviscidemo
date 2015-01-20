@@ -141,6 +141,9 @@
   </target>
 
   <target name="install" depends="composer" unless="drush.noinstall" description="Run drush site-install">
+    <echo message="Building sites/default with local.settings.php" />
+    <loadfile property="localSettings" srcfile="build/docroot/sites/default/local.settings.php"/> 
+    <echo message="${localSettings}"/> 
     <exec executable="${composer.bin}/drush" dir="${docroot}" taskname="drush">
       <env key="DRUSH_PHP" value="${php}"/>
       <arg value="site-install"/>
