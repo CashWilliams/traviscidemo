@@ -1,9 +1,13 @@
 #!/bin/bash
 
+echo "- Acquia Deploy Starting -"
+
 # trace execution
 set -x
 
-echo "- Acquia Deploy Starting -"
+# lets dump all enviroement variables
+printenv 
+
 
 if ${ACQUIA_DISABLE_DEPLOY:-false}; then
   echo "Acquia deploy disabled"
@@ -55,4 +59,5 @@ NOW=$(date +"%Y-%m-%d %H:%M:%S")
 git commit -m "$TRAVIS_BRANCH build at $NOW" 
 git push origin $TRAVIS_BRANCH 
 
+set +x
 echo "- Acquia Deploy Complete -"
