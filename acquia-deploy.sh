@@ -56,7 +56,7 @@ for DIR in docroot/sites/*; do
   fi
 done
 NOW=$(date +"%Y-%m-%d %H:%M:%S")
-git commit -m "$TRAVIS_BRANCH build at $NOW" 
+git commit -m "$TRAVIS_BRANCH #$TRAVIS_BUILD_NUMBER $NOW $TRAVIS_COMMIT" 
 git push origin $TRAVIS_BRANCH 
 
 set +x
