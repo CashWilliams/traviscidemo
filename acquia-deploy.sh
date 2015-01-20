@@ -14,7 +14,7 @@ if ${ACQUIA_DISABLE_DEPLOY:-false}; then
   exit 0
 fi
 
-if [ -n "$TRAVIS_PULL_REQUEST" ]; then
+if [ -n "$TRAVIS_PULL_REQUEST" ] && [ "$TRAVIS_PULL_REQUEST" != false ]; then
   echo "Pull requests do not get deployed"
   exit 0
 fi
