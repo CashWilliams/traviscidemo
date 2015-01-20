@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="Travis CI Demo" default="composer">
-
-  <property name="drupal.profile" value="standard"/>
-
+  
   <property name="builddir" value="${basedir}/build"/>
   <property name="selenium" value="${builddir}/selenium-server-standalone.jar"/>
 
@@ -18,6 +16,7 @@
   <property name="composer.bin"     value="${basedir}/vendor/bin"/>
   <property name="db.url"           value="mysql://username:password@host/db"/>
   <property name="docroot"          value="${builddir}/docroot"/>
+  <property name="drupal.profile"   value="standard"/>
   <property name="drush.makefile"   value="build-${drupal.makefile}.make"/>
   <property name="drush.args"       value=""/>
   <property name="php"              value="php"/>
@@ -115,21 +114,32 @@
     </exec>
   </target>
 
+  <!-- TODO: Make these values not hardcoded -->
   <target name="rsync" description="Rsync into build/docroot">
-    <!-- Rsync Sites -->
+    <!-- Rsync Default Site -->
     <exec executable="${rsync}" taskname="rsync">
       <arg value="-aqc"/>
-      <arg value="${basedir}/sites/"/>
-      <arg value="${docroot}/sites/"/>
+      <arg value="--delete"/>
+      <arg value="${basedir}/sites/default/"/>
+      <arg value="${docroot}/sites/default/"/>
+    </exec>
+    <!-- Rsync Profile -->
+    <exec executable="${rsync}" taskname="rsync">
+      <arg value="-aqc"/>
+      <arg value="--delete"/>
+      <arg value="${basedir}/profiles/${drupal.profile}"/>
+      <arg value="${docroot}/profiles/${drupal.profile}"/>
     </exec>
     <!-- Rsync acquia cloud hooks -->
     <exec executable="${rsync}" taskname="rsync">
       <arg value="-aqc"/>
+      <arg value="--delete"/>
       <arg value="${basedir}/hooks/"/>
       <arg value="${builddir}/hooks/"/>
     </exec>
   </target>
 
+  <!-- TODO: Make these values not hardcoded -->
   <target name="link" description="Link all required base files">
     <!-- Delete the empty sites/default directory core ships with -->
     <delete includeEmptyDirs="true" removeNotFollowedSymlinks="true">
@@ -138,6 +148,7 @@
     <!-- Link the default directory -->
     <symlink link="${docroot}/sites/default" resource="${basedir}/sites/default"/>
     <!-- Link any other needed folders/files here -->
+    <symlink link="${docroot}/profiles/${drupal.profile}" resource="${basedir}/profiles/${drupal.profile}"/>
   </target>
 
   <target name="install" depends="composer" unless="drush.noinstall" description="Run drush site-install">
