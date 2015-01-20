@@ -147,7 +147,6 @@
       <arg value="-y"/>
       <arg value="-v"/>
       <arg value="--nocolor"/>
-      <arg value="--db-url=${db.url}"/>
       <arg value="--site-name=${site.name}"/>
       <arg value="--site-mail=${site.mail}"/>
       <arg value="--account-name=${account.name}"/>
@@ -174,7 +173,6 @@
       <arg value="sql-drop"/>
       <arg value="-y"/>
       <arg value="--nocolor"/>
-      <arg value="--db-url=${db.url}"/>
     </exec>
   </target>
 

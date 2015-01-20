@@ -1,5 +1,4 @@
 base.url=http://localhost
-db.url=mysql://username:password@host/db
 drupal.makefile=traviscidemo
 
 #behat.extra=""

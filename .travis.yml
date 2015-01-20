@@ -44,7 +44,7 @@ before_script:
 - sed -i -e "s,#apache.user,apache.user,g" build.properties
 - sed -i -e "s,#site.domain,site.domain,g" build.properties
 # Hack to force a local.settings.php file into /sites/default
-- echo "<?php $databases = array ('default' => array ('default' => array ('database' => 'travis','username' => 'travis','password' => 'travis','host' => 'localhost','port' => '','driver' => 'mysql','prefix' => '')));" > sites/default/local.settings.php
+- echo "<?php $databases = array('default' => array('default' => array('database' => 'travis','username' => 'travis','password' => 'travis','host' => 'localhost','driver' => 'mysql')));" > sites/default/local.settings.php
 script:
 - ant -v -logger org.apache.tools.ant.listener.AnsiColorLogger run-tests
 after_success:
