@@ -1,9 +1,13 @@
 #!/bin/bash
 
+echo "- Acquia Deploy Starting -"
+
 # trace execution
 set -x
 
-echo "- Acquia Deploy Starting -"
+# lets dump all enviroement variables
+printenv 
+
 
 if ${ACQUIA_DISABLE_DEPLOY:-false}; then
   echo "Acquia deploy disabled"
@@ -44,8 +48,16 @@ rsync -avh --delete build/hooks build_deploy
 cd build_deploy
 # git add -A should remove no longer used files
 git add -A .
+for DIR in docroot/sites/*; do
+  if [ -d "${DIR}" ]; then
+    if [ "$DIR" != "docroot/sites/all" ]; then
+      git add -f $DIR/settings.php
+    fi
+  fi
+done
 NOW=$(date +"%Y-%m-%d %H:%M:%S")
-git commit -m "$TRAVIS_BRANCH build at $NOW" 
+git commit -m "$TRAVIS_BRANCH #$TRAVIS_BUILD_NUMBER $NOW $TRAVIS_COMMIT" 
 git push origin $TRAVIS_BRANCH 
 
+set +x
 echo "- Acquia Deploy Complete -"
