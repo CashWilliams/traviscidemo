@@ -1,5 +1,6 @@
 base.url=http://localhost
 drupal.makefile=traviscidemo
+drupal.profile=traviscidemo
 
 #behat.extra=""
 #sites.subdir=default

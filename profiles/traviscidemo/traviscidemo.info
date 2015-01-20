@@ -1,0 +1,10 @@
+name = Travis CI Demo Profile
+description = Start with only a few modules enabled.
+core = 7.x
+
+dependencies[] = block
+dependencies[] = jquery_update
+dependencies[] = ctools
+dependencies[] = views
+dependencies[] = token
+
