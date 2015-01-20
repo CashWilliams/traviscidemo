@@ -127,8 +127,8 @@
     <exec executable="${rsync}" taskname="rsync">
       <arg value="-aqc"/>
       <arg value="--delete"/>
-      <arg value="${basedir}/profiles/${drupal.profile}"/>
-      <arg value="${docroot}/profiles/${drupal.profile}"/>
+      <arg value="${basedir}/profiles/${drupal.profile}/"/>
+      <arg value="${docroot}/profiles/${drupal.profile}/"/>
     </exec>
     <!-- Rsync acquia cloud hooks -->
     <exec executable="${rsync}" taskname="rsync">
